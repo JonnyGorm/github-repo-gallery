@@ -1,5 +1,6 @@
 //Profile information 
 const overview = document.querySelector(".overview");
+const uList = document.querySelector(".repo-list");
 //Github username
 const username = ("JonnyGorm");
 
@@ -27,4 +28,22 @@ const userInfo = function (data) {
             <p><strong>Number of public repos:</strong> ${data.public_repos}</p>
         </div>`;
         overview.append(div);
+        gitRepos();
+};
+
+const gitRepos = async function () {
+    const repoRequest = await fetch (`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
+    const repoData = await repoRequest.json();
+    //console.log(repoData);
+    displayRepo(repoData);
+};
+//gitRepos();
+
+const displayRepo = function(repos) {
+    for (const repo of repos) {
+        const repoItem = document.createElement("li");
+        repoItem.classList.add("repo");
+        repoItem.innerHTML = `<h3>${repo.name}</h3>`;
+        uList.append(repoItem);
+    }
 };
