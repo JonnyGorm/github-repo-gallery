@@ -3,8 +3,10 @@ const overview = document.querySelector(".overview");
 const uList = document.querySelector(".repo-list");
 const allRepos = document.querySelector(".repos");
 const individualRepoData = document.querySelector(".repo-data");
+const viewRepos = document.querySelector(".view-repos");
+const filterInput = document.querySelector(".filter-repos");
 //Github username
-const username = ("JonnyGorm");
+const username = "JonnyGorm";
 
 const gitProfile = async function () {
     const infoRequest = await fetch (`https://api.github.com/users/${username}`);
@@ -29,10 +31,10 @@ const userInfo = function (data) {
             <p><strong>Number of public repos:</strong> ${data.public_repos}</p>
         </div>`;
         overview.append(div);
-        gitRepos();
+        gitRepos(username);
 };
 
-const gitRepos = async function () {
+const gitRepos = async function (username) {
     const repoRequest = await fetch (`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
     const repoData = await repoRequest.json();
     displayRepo(repoData);
@@ -40,6 +42,7 @@ const gitRepos = async function () {
 //gitRepos();
 
 const displayRepo = function(repos) {
+    filterInput.classList.remove("hide");
     for (const repo of repos) {
         const repoItem = document.createElement("li");
         repoItem.classList.add("repo");
@@ -58,10 +61,9 @@ uList.addEventListener("click", function (e) {
 const getRepoInfo = async function (repoName) {
     const getInfo = await fetch (`https://api.github.com/repos/${username}/${repoName}`);
     const repoInfo = await getInfo.json();
-    console.log(repoInfo);
+    
     const fetchLanguages = await fetch (repoInfo.languages_url);
     const languageData = await fetchLanguages.json();
-    //console.log(languageData);
     const languages = [];
     for (const language in languageData) {
         languages.push(language);
@@ -70,6 +72,7 @@ const getRepoInfo = async function (repoName) {
 };
 
 const displayInfo = function (repoInfo, languages) {
+    viewRepos.classList.remove("hide");
     individualRepoData.innerHTML = "";
     individualRepoData.classList.remove("hide");
     allRepos.classList.add("hide");
@@ -84,3 +87,24 @@ const displayInfo = function (repoInfo, languages) {
     individualRepoData.append(div);
 };
 
+viewRepos.addEventListener("click", function (){
+    allRepos.classList.remove("hide");
+    individualRepoData.classList.add("hide");
+    viewRepos.classList.add("hide");
+});
+
+//Search bar
+filterInput.addEventListener("input", function (e) {
+    const textInput = e.target.value;
+    const repos = document.querySelectorAll(".repo");
+    const lowerCaseInput = textInput.toLowerCase();
+
+    for (const repo of repos) {
+        const repoLowerText = repo.innerText.toLowerCase();
+        if (repoLowerText.includes(lowerCaseInput)){
+            repo.classList.remove("hide");
+        } 
+        else { repo.classList.add("hide");
+        }
+    }
+});
