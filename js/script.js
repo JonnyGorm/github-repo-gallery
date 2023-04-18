@@ -39,7 +39,7 @@ const gitRepos = async function (username) {
     const repoData = await repoRequest.json();
     displayRepo(repoData);
 };
-//gitRepos();
+
 
 const displayRepo = function(repos) {
     filterInput.classList.remove("hide");
